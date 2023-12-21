@@ -27,11 +27,18 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    const services = client.db('happy-smile').collection('services');
 
-    app.get('/', (req, res) => {
-        
+    const servicesCollection = client.db('happy-smile').collection('services');
+
+    app.get('/services', async(req, res) => {
+      const limit = parseInt(req.query.limit);
+      const query = {};
+      const cursor = servicesCollection.find(query);
+      const servicesAmount = await servicesCollection.estimatedDocumentCount();
+      const services = await cursor.limit(limit).toArray();
+      res.send([services, servicesAmount]);
     })
+
   } finally {
 
   }
@@ -40,9 +47,9 @@ run().catch(err => console.log(err));
 
 
 app.get('/', (req, res) => {
-    res.send('Happy smile server')
+  res.send('Happy smile server')
 });
 
 app.listen(port, () => {
-    console.log('Happy smile server is running on port', port);
+  console.log('Happy smile server is running on port', port);
 })

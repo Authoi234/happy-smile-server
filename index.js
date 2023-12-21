@@ -27,7 +27,11 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    
+    const services = client.db('happy-smile').collection('services');
+
+    app.get('/', (req, res) => {
+        
+    })
   } finally {
 
   }

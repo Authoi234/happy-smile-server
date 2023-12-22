@@ -34,9 +34,8 @@ async function run() {
       const limit = parseInt(req.query.limit);
       const query = {};
       const cursor = servicesCollection.find(query);
-      const servicesAmount = await servicesCollection.estimatedDocumentCount();
       const services = await cursor.limit(limit).toArray();
-      res.send([services, servicesAmount]);
+      res.send(services);
     })
 
   } finally {

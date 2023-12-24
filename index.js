@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongodb = require('mongodb');
 const port = process.env.PORT || 5000;
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 // creating app
@@ -13,7 +14,6 @@ app.use(express.json());
 
 // connecting to the server
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.6iupoas.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -35,6 +35,13 @@ async function run() {
       const query = {};
       const cursor = servicesCollection.find(query);
       const services = await cursor.limit(limit).toArray();
+      res.send(services);
+    })
+
+    app.get('/services/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const services = await servicesCollection.findOne(query);
       res.send(services);
     })
 

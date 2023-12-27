@@ -46,13 +46,20 @@ async function run() {
       res.send(services);
     })
 
-    app.get('/reviews/:service', async(req, res) => {
-      const service = req.params.service;
-      const query = {};
+    app.get('/reviews/:serviceId', async(req, res) => {
+      const serviceid = req.params.serviceId;
+      const query = {serviceId : {$eq : `${serviceid}`}};
       const cursor = reviewsCollection.find(query);
       const reviews = await cursor.toArray();
-      const filteredReviews = reviews.filter(review => review.service === service);
-      res.send(filteredReviews);
+      res.send(reviews);
+    })
+
+    app.post('/reviews', async(req, res) => {
+      const newReview = req.body;
+      
+      const result = await reviewsCollection.insertOne(newReview);
+
+      res.send(result);
     })
 
   } finally {

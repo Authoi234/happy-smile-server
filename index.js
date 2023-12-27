@@ -29,6 +29,7 @@ async function run() {
   try {
 
     const servicesCollection = client.db('happy-smile').collection('services');
+    const reviewsCollection = client.db('happy-smile').collection('reviews');
 
     app.get('/services', async(req, res) => {
       const limit = parseInt(req.query.limit);
@@ -45,8 +46,13 @@ async function run() {
       res.send(services);
     })
 
-    app.get('/review', (req, res) => {
-
+    app.get('/reviews/:service', async(req, res) => {
+      const service = req.params.service;
+      const query = {};
+      const cursor = reviewsCollection.find(query);
+      const reviews = await cursor.toArray();
+      const filteredReviews = reviews.filter(review => review.service === service);
+      res.send(filteredReviews);
     })
 
   } finally {

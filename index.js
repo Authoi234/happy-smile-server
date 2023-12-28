@@ -41,7 +41,7 @@ async function run() {
 
     app.get('/services/:id', async(req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = {_id : new ObjectId(id)};
       const services = await servicesCollection.findOne(query);
       res.send(services);
     })
@@ -60,6 +60,14 @@ async function run() {
       const result = await reviewsCollection.insertOne(newReview);
 
       res.send(result);
+    })
+
+    app.get('/myreviews/:email', async(req, res) => {
+      const userEmail = req.params.email;
+      const query = {email: {$eq : `${userEmail}`}};
+      const cursor = reviewsCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
     })
 
   } finally {

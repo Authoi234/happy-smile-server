@@ -31,7 +31,7 @@ async function run() {
     const servicesCollection = client.db('happy-smile').collection('services');
     const reviewsCollection = client.db('happy-smile').collection('reviews');
 
-    app.get('/services', async(req, res) => {
+    app.get('/services', async (req, res) => {
       const limit = parseInt(req.query.limit);
       const query = {};
       const cursor = servicesCollection.find(query)?.sort({ createdAt: -1 });
@@ -39,56 +39,61 @@ async function run() {
       res.send(services);
     });
 
-    app.get('/services/:id', async(req, res) => {
+    app.get('/services/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const services = await servicesCollection.findOne(query);
       res.send(services);
     });
 
-    app.get('/reviews/:serviceId', async(req, res) => {
+    app.get('/reviews/:serviceId', async (req, res) => {
       const serviceid = req.params.serviceId;
-      const query = {serviceId : {$eq : `${serviceid}`}};
+      const query = { serviceId: { $eq: `${serviceid}` } };
       const cursor = reviewsCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
 
-    app.post('/reviews', async(req, res) => {
+    app.post('/reviews', async (req, res) => {
       const newReview = req.body;
-      
+
       const result = await reviewsCollection.insertOne(newReview);
 
       res.send(result);
     });
 
-    app.get('/myreviews/:email', async(req, res) => {
+    app.get('/myreviews/:email', async (req, res) => {
       const userEmail = req.params.email;
-      const query = {email: {$eq : userEmail}};
+      const query = { email: { $eq: userEmail } };
       const cursor = reviewsCollection.find(query);
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
 
-    app.delete('/myreviews/:id', async(req, res)  => {
+    app.delete('/myreviews/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await reviewsCollection.deleteOne(query);
       res.send(result);
     });
 
-    app.patch('/myreviews/:id', async(req, res)  => {
+    app.patch('/myreviews/:id', async (req, res) => {
       const id = req.params.id;
       const review = req.body.review;
-      const filter = {_id: new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
       const updatedReview = {
         $set: {
-          review : review
+          review: review
         }
       }
       const result = await reviewsCollection.updateOne(filter, updatedReview);
       res.send(result);
-  });
+    });
+    app.post('/addServices', async(req, res) => {
+      const service = req.body;
+      const result = await servicesCollection.insertOne(service);
+      res.send(result);
+    })
 
   } finally {
 

@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const mongodb = require('mongodb');
 var jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -127,7 +126,9 @@ async function run() {
 
   }
 }
-run().catch(err => console.log(err));
+run().catch(err => {
+  // console.log(err);
+});
 
 
 app.get('/', (req, res) => {

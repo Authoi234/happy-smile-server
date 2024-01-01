@@ -26,19 +26,19 @@ const client = new MongoClient(uri, {
   }
 });
 
-function verifyJWTToken(req, res, next ){
+function verifyJWTToken(req, res, next) {
   const tokenHeader = req.headers.jwtauthorization;
 
   if (!tokenHeader) {
-    return res.status(401).send({errorMessage: 'Unauthorized Access'});
+    return res.status(401).send({ errorMessage: 'Unauthorized Access' });
   }
 
   const token = tokenHeader.split(' ')[1];
 
-  jwt.verify(token, process.env.JWT_TOKEN_SECRET, function(err, decoded){
+  jwt.verify(token, process.env.JWT_TOKEN_SECRET, function (err, decoded) {
 
     if (err) {
-      return res.status(403).send({errorMessage: 'Unauthorized Access'});
+      return res.status(403).send({ errorMessage: 'Unauthorized Access' });
     }
 
     req.decoded = decoded;
@@ -52,7 +52,7 @@ async function run() {
     const servicesCollection = client.db('happy-smile').collection('services');
     const reviewsCollection = client.db('happy-smile').collection('reviews');
 
-    
+
     app.get('/services', async (req, res) => {
       const limit = parseInt(req.query.limit);
       const query = {};
@@ -67,7 +67,7 @@ async function run() {
       const services = await servicesCollection.findOne(query);
       res.send(services);
     });
-    
+
     app.get('/reviews/:serviceId', async (req, res) => {
       const serviceid = req.params.serviceId;
       const query = { serviceId: { $eq: `${serviceid}` } };
@@ -80,7 +80,7 @@ async function run() {
       const newReview = req.body;
 
       const result = await reviewsCollection.insertOne(newReview);
-      
+
       res.send(result);
     });
 
@@ -98,7 +98,7 @@ async function run() {
       const result = await reviewsCollection.deleteOne(query);
       res.send(result);
     });
-    
+
     app.patch('/myreviews/:id', async (req, res) => {
       const id = req.params.id;
       const review = req.body.review;
@@ -111,20 +111,20 @@ async function run() {
       const result = await reviewsCollection.updateOne(filter, updatedReview);
       res.send(result);
     });
-    app.post('/addServices', verifyJWTToken, async(req, res) => {
+    app.post('/addServices', verifyJWTToken, async (req, res) => {
       const service = req.body;
       const result = await servicesCollection.insertOne(service);
       res.send(result);
-    }) 
+    })
 
     app.post('/jwt', (req, res) => {
       const user = req.body;
-      const userToken = jwt.sign(user, process.env.JWT_TOKEN_SECRET, {expiresIn: '12h'})
-      res.send({userToken});
+      const userToken = jwt.sign(user, process.env.JWT_TOKEN_SECRET, { expiresIn: '12h' })
+      res.send({ userToken });
     })
 
   } finally {
-    
+
   }
 }
 run().catch(err => console.log(err));
